@@ -35,6 +35,9 @@ val catsRetryVersion = "3.1.0"
 lazy val root = (project in file("."))
   .settings(
     name := "api-football-scala-client",
+    organization := "io.github.craig1901",
+    sonatypeCredentialHost := "central.sonatype.com",
+    sonatypeRepository := "https://central.sonatype.com/api/v1/publisher/deployments/maven2",
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-effect" % catsEffectVersion,
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
