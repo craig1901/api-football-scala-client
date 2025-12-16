@@ -1,5 +1,4 @@
 ThisBuild / scalaVersion := "2.13.15"
-ThisBuild / version := "0.0.1-TEST"
 
 inThisBuild(
   List(
