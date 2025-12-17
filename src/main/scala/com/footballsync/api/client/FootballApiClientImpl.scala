@@ -325,7 +325,7 @@ object FootballApiClientImpl {
   val topRedCardsPath: String = "players/topredcards"
   val venuesPath: String = "venues"
   val standingsPath: String = "standings"
-  val coachesPath: String = "coachs"
+  val coachesPath: String = "coaches"
   val transfersPath: String = "transfers"
   val trophiesPath: String = "trophies"
   val sidelinedPath: String = "sidelined"

@@ -32,7 +32,6 @@ libraryDependencies ++= Seq(
 ```scala
 import cats.effect._
 import com.footballsync.api.client._
-import com.footballsync.api.client.impl._
 import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import com.footballsync.model.FootballDataResponses._
@@ -159,10 +158,10 @@ All API responses are wrapped in `ApiResponse[T]` containing:
 ```scala
 case class ApiResponse[T](
   get: String,        // Endpoint path
-  parameters: Map[String, String],  // Request parameters
-  errors: List[String],  // Any errors
+  parameters: Either[List[Map[String, String]], Map[String, String]],  // Request parameters
+  errors: Either[List[Map[String, String]], Map[String, String]],  // Any errors
   results: Int,       // Number of results
-  paging: Paging,     // Pagination info
+  paging: Paging,     // Pagination info (current: Int, total: Int)
   response: List[T]   // The actual data
 )
 ```

@@ -11,7 +11,7 @@ import com.footballsync.model.FootballDataResponses._
 
 // Get comprehensive statistics for Manchester United in Premier League 2023
 apiClient.getTeamStatistics("33", "39", "2023").map { response =>
-  response.headOption.map { stats =>
+  response.response.headOption.map { stats =>
     println(s"${stats.league.name} ${stats.league.season}")
     println(s"Team: ${stats.team.name}")
 
@@ -30,7 +30,7 @@ apiClient.getTeamStatistics("33", "39", "2023").map { response =>
     println("\n--- GOALS ---")
     println(f"Goals For: ${stats.goals.for.total.total} (${stats.goals.for.total.home.get} home, ${stats.goals.for.total.away.get} away)")
     println(f"Goals Against: ${stats.goals.against.total.total} (${stats.goals.against.total.home.get} home, ${stats.goals.against.total.away.get} away)")
-    println(f"Clean Sheets: ${stats.clean_sheets.total} (${stats.clean_sheets.home.get} home, ${stats.clean_sheets.away.get} away)")
+    println(f"Clean Sheets: ${stats.clean_sheet.total} (${stats.clean_sheet.home.get} home, ${stats.clean_sheet.away.get} away)")
     println(f"Failed to Score: ${stats.failed_to_score.total} (${stats.failed_to_score.home.get} home, ${stats.failed_to_score.away.get} away)")
 
     // Cards
@@ -91,8 +91,8 @@ def compareTeams(
       println(f"  ${stats2.team.name}: $team2GD")
 
       println(f"\nClean Sheets:")
-      println(f"  ${stats1.team.name}: ${stats1.clean_sheets.total}")
-      println(f"  ${stats2.team.name}: ${stats2.clean_sheets.total}")
+      println(f"  ${stats1.team.name}: ${stats1.clean_sheet.total}")
+      println(f"  ${stats2.team.name}: ${stats2.clean_sheet.total}")
 
     case _ =>
       println("Could not retrieve statistics for comparison")

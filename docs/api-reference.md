@@ -548,8 +548,8 @@ All methods return `F[ApiResponse[T]]` where `T` depends on the endpoint:
 ```scala
 case class ApiResponse[T](
   get: String,                    // The endpoint path
-  parameters: Map[String, String], // Request parameters
-  errors: List[String],           // API errors
+  parameters: Either[List[Map[String, String]], Map[String, String]], // Request parameters
+  errors: Either[List[Map[String, String]], Map[String, String]],     // API errors (empty map if none)
   results: Int,                   // Number of results
   paging: Paging,                 // Pagination info
   response: List[T]               // The actual data
@@ -557,9 +557,17 @@ case class ApiResponse[T](
 
 case class Paging(
   current: Int,      // Current page
-  total: Int,        // Total pages
-  totalResults: Int  // Total results across all pages
+  total: Int         // Total pages
 )
+```
+
+**Note:** The `errors` and `parameters` fields use `Either` to handle both list and map formats from the API. To check for errors:
+```scala
+response.errors match {
+  case Right(errorMap) if errorMap.nonEmpty => // Handle errors
+  case Left(errorList) if errorList.nonEmpty => // Handle errors
+  case _ => // No errors
+}
 ```
 
 ### Specific Response Types
@@ -585,13 +593,15 @@ Always check for errors in responses:
 
 ```scala
 apiClient.fetchFixtures("39", "2023").flatMap { response =>
-  response.errors match {
-    case Nil =>
-      // Success - process data
-      IO.println(s"Found ${response.results} fixtures")
-    case errors =>
-      // Handle errors
-      IO.raiseError(new RuntimeException(s"API errors: ${errors.mkString(", ")}"))
+  val hasErrors = response.errors match {
+    case Right(errorMap) => errorMap.nonEmpty
+    case Left(errorList) => errorList.nonEmpty
+  }
+
+  if (hasErrors) {
+    IO.raiseError(new RuntimeException(s"API errors: ${response.errors}"))
+  } else {
+    IO.println(s"Found ${response.results} fixtures")
   }
 }
 ```

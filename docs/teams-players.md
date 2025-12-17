@@ -11,7 +11,7 @@ import com.footballsync.model.FootballDataResponses._
 
 // Get a specific team by ID
 apiClient.fetchTeam("33").map { response =>
-  response.headOption.map { team =>
+  response.response.headOption.map { team =>
     println(s"Team: ${team.team.name}")
     println(s"Country: ${team.team.country}")
     println(s"Founded: ${team.team.founded}")
@@ -25,7 +25,7 @@ apiClient.fetchTeam("33").map { response =>
 
 ```scala
 apiClient.fetchTeam("33").map { response =>
-  response.headOption.map { team =>
+  response.response.headOption.map { team =>
     // Basic information
     val name = team.team.name
     val code = team.team.code.getOrElse("N/A")
@@ -36,14 +36,12 @@ apiClient.fetchTeam("33").map { response =>
 
     // Venue information
     val venue = team.venue
-    venue.foreach { v =>
-      println(s"Venue: ${v.name}")
-      println(s"Address: ${v.address.getOrElse("N/A")}")
-      println(s"City: ${v.city}")
-      println(s"Capacity: ${v.capacity.getOrElse(0)}")
-      println(s"Surface: ${v.surface.getOrElse("N/A")}")
-      println(s"Image: ${v.image}")
-    }
+    println(s"Venue: ${venue.name}")
+    println(s"Address: ${venue.address.getOrElse("N/A")}")
+    println(s"City: ${venue.city.getOrElse("N/A")}")
+    println(s"Capacity: ${venue.capacity.getOrElse(0)}")
+    println(s"Surface: ${venue.surface.getOrElse("N/A")}")
+    println(s"Image: ${venue.image.getOrElse("N/A")}")
   }
 }
 ```
@@ -98,9 +96,9 @@ apiClient.fetchSquad("33").map { response =>
 ```scala
 // Get detailed statistics for Manchester United in Premier League 2023
 apiClient.getTeamStatistics("33", "39", "2023").map { response =>
-  response.headOption.map { stats =>
+  response.response.headOption.map { stats =>
     println(s"${stats.league.name} ${stats.league.season} Statistics")
-    println(s"\nForm: ${stats.form.mkString(", ")}")
+    println(s"\nForm: ${stats.form.getOrElse("N/A")}")
 
     // Fixtures
     println("\nFixtures:")
@@ -113,7 +111,7 @@ apiClient.getTeamStatistics("33", "39", "2023").map { response =>
     println("\nGoals:")
     println(s"  For: ${stats.goals.for.total.total}")
     println(s"  Against: ${stats.goals.against.total.total}")
-    println(s"  Clean Sheets: ${stats.clean_sheets.total}")
+    println(s"  Clean Sheets: ${stats.clean_sheet.total}")
 
     // Cards
     println("\nCards:")
@@ -325,7 +323,7 @@ def calculateAverageTeamAge(
   teamId: String
 ): IO[Option[Double]] = {
   apiClient.fetchSquad(teamId).map { response =>
-    response.headOption.map { squad =>
+    response.response.headOption.map { squad =>
       val ages = squad.players.flatMap(_.age)
       if (ages.nonEmpty) ages.sum.toDouble / ages.length else 0.0
     }

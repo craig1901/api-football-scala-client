@@ -106,20 +106,27 @@ All API responses are wrapped in `ApiResponse[T]`:
 ```scala
 case class ApiResponse[T](
   get: String,                    // The endpoint that was called
-  parameters: Map[String, String], // Parameters sent with the request
-  errors: List[String],           // Any errors from the API
+  parameters: Either[List[Map[String, String]], Map[String, String]], // Parameters sent
+  errors: Either[List[Map[String, String]], Map[String, String]],     // API errors (if any)
   results: Int,                   // Number of results returned
   paging: Paging,                 // Pagination information
   response: List[T]               // The actual data
 )
+
+case class Paging(current: Int, total: Int)
 ```
 
 ### Example: Handling Response
 
 ```scala
 apiClient.fetchTeamsByCountry("England").flatMap { response =>
-  if (response.errors.nonEmpty) {
-    IO.raiseError(new RuntimeException(s"API Error: ${response.errors.mkString(", ")}"))
+  val hasErrors = response.errors match {
+    case Right(errorMap) => errorMap.nonEmpty
+    case Left(errorList) => errorList.nonEmpty
+  }
+
+  if (hasErrors) {
+    IO.raiseError(new RuntimeException(s"API Error: ${response.errors}"))
   } else {
     response.response.traverse { team =>
       IO.println(s"${team.team.name} - Founded: ${team.team.founded}")

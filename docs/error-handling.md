@@ -11,25 +11,29 @@ API responses include an `errors` field that indicates API-level issues:
 ```scala
 case class ApiResponse[T](
   get: String,
-  parameters: Map[String, String],
-  errors: List[String],  // API errors
+  parameters: Either[List[Map[String, String]], Map[String, String]],
+  errors: Either[List[Map[String, String]], Map[String, String]],  // API errors
   results: Int,
   paging: Paging,
   response: List[T]
 )
 ```
 
+The `errors` field uses an `Either` type to handle different response formats from the API.
+
 Example of handling API errors:
 
 ```scala
 apiClient.fetchFixtures("39", "2023").flatMap { response =>
-  response.errors match {
-    case Nil =>
-      // Success - process the data
-      IO.println(s"Found ${response.results} fixtures")
-    case errors =>
-      // API returned errors
-      IO.raiseError(new RuntimeException(s"API errors: ${errors.mkString(", ")}"))
+  val hasErrors = response.errors match {
+    case Right(errorMap) => errorMap.nonEmpty
+    case Left(errorList) => errorList.nonEmpty
+  }
+
+  if (hasErrors) {
+    IO.raiseError(new RuntimeException(s"API errors: ${response.errors}"))
+  } else {
+    IO.println(s"Found ${response.results} fixtures")
   }
 }
 ```
@@ -60,12 +64,16 @@ import cats.syntax.either._
 def safeGetTeam(apiClient: FootballApiClient[IO], teamId: String): EitherT[IO, ApiError, TeamData] =
   EitherT[IO, ApiError, TeamData] {
     apiClient.fetchTeam(teamId).map { response =>
-      response.errors match {
-        case Nil =>
-          response.response.headOption
-            .toRight(ApiError.NotFound(s"Team $teamId not found"))
-        case errors =>
-          Left(ApiError.ApiResponse(errors))
+      val hasErrors = response.errors match {
+        case Right(errorMap) => errorMap.nonEmpty
+        case Left(errorList) => errorList.nonEmpty
+      }
+
+      if (hasErrors) {
+        Left(ApiError.ApiResponse(response.errors.toString))
+      } else {
+        response.response.headOption
+          .toRight(ApiError.NotFound(s"Team $teamId not found"))
       }
     }
   }
@@ -73,7 +81,7 @@ def safeGetTeam(apiClient: FootballApiClient[IO], teamId: String): EitherT[IO, A
 sealed trait ApiError
 object ApiError {
   case class NotFound(message: String) extends ApiError
-  case class ApiResponse(errors: List[String]) extends ApiError
+  case class ApiResponse(errors: String) extends ApiError
   case class NetworkError(cause: Throwable) extends ApiError
 }
 ```

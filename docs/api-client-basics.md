@@ -44,10 +44,10 @@ apiClient.fetchSeasons().map { response =>
 ```scala
 // Fetch a specific team by ID
 apiClient.fetchTeam("33").flatMap { response =>
-  response.headOption match {
+  response.response.headOption match {
     case Some(teamData) =>
-      IO.println(s"Team: ${teamData.team.name}")
-      IO.println(s"Country: ${teamData.team.country}")
+      IO.println(s"Team: ${teamData.team.name}") *>
+      IO.println(s"Country: ${teamData.team.country}") *>
       IO.println(s"Founded: ${teamData.team.founded}")
     case None =>
       IO.println("Team not found")
@@ -89,13 +89,13 @@ apiClient.fetchSingleFixture("1034627").map { response =>
 
 ```scala
 apiClient.getTeamStatistics("33", "39", "2023").flatMap { response =>
-  response.headOption match {
+  response.response.headOption match {
     case Some(stats) =>
-      IO.println(s"Games Played: ${stats.fixtures.played.total}")
-      IO.println(s"Wins: ${stats.fixtures.wins.total}")
-      IO.println(s"Goals For: ${stats.goals.for.total.total}")
-      IO.println(s"Goals Against: ${stats.goals.against.total.total}")
-      IO.println(s"Clean Sheets: ${stats.clean_sheets.total}")
+      IO.println(s"Games Played: ${stats.fixtures.played.total}") *>
+      IO.println(s"Wins: ${stats.fixtures.wins.total}") *>
+      IO.println(s"Goals For: ${stats.goals.for.total.total}") *>
+      IO.println(s"Goals Against: ${stats.goals.against.total.total}") *>
+      IO.println(s"Clean Sheets: ${stats.clean_sheet.total}")
     case None =>
       IO.println("Statistics not found")
   }
@@ -170,8 +170,13 @@ val multipleTeams = apiClient.fetchTeams("39", "2023").map(_.response)
 
 ```scala
 apiClient.fetchFixtures("39", "2023").flatMap { response =>
-  if (response.errors.nonEmpty) {
-    IO.raiseError(new RuntimeException(s"API errors: ${response.errors.mkString(", ")}"))
+  val hasErrors = response.errors match {
+    case Right(errorMap) => errorMap.nonEmpty
+    case Left(errorList) => errorList.nonEmpty
+  }
+
+  if (hasErrors) {
+    IO.raiseError(new RuntimeException(s"API errors: ${response.errors}"))
   } else {
     IO.println(s"Found ${response.results} fixtures")
   }
@@ -195,13 +200,17 @@ apiClient.fetchFixtures("39", "2023").map { response =>
 ```scala
 import cats.syntax.either._
 
-def safeGetTeam(apiClient: FootballApiClient[IO], teamId: String): IO[Either[String, TeamData]] =
+def safeGetTeam(apiClient: FootballApiClient[IO], teamId: String): IO[Either[String, TeamResponse]] =
   apiClient.fetchTeam(teamId).map { response =>
-    response.errors match {
-      case Nil =>
-        response.response.headOption.toRight("Team not found")
-      case errors =>
-        Left(s"API error: ${errors.mkString(", ")}")
+    val hasErrors = response.errors match {
+      case Right(errorMap) => errorMap.nonEmpty
+      case Left(errorList) => errorList.nonEmpty
+    }
+
+    if (hasErrors) {
+      Left(s"API error: ${response.errors}")
+    } else {
+      response.response.headOption.toRight("Team not found")
     }
   }
 ```
@@ -214,13 +223,13 @@ import cats.data.EitherT
 def getTeamAndLeague(
   apiClient: FootballApiClient[IO],
   teamId: String,
-  leagueId: String
-): EitherT[IO, String, (TeamData, LeagueData)] = for {
-  team <- EitherT.fromEitherF[IO, String, TeamData](
+  leagueId: Int
+): EitherT[IO, String, (TeamResponse, LeagueResponse)] = for {
+  team <- EitherT.fromEitherF[IO, String, TeamResponse](
     apiClient.fetchTeam(teamId).map(_.response.headOption.toRight("Team not found"))
   )
-  league <- EitherT.fromEitherF[IO, String, LeagueData](
-    apiClient.fetchLeague(leagueId).map(_.response.headOption.toRight("League not found"))
+  league <- EitherT.fromEitherF[IO, String, LeagueResponse](
+    apiClient.fetchAllLeagues().map(_.response.find(_.league.id == leagueId).toRight("League not found"))
   )
 } yield (team, league)
 ```

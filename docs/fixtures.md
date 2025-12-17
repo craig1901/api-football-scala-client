@@ -24,7 +24,7 @@ apiClient.fetchFixtures("39", "2023").map { response =>
 ```scala
 // Fetch a specific fixture by ID
 apiClient.fetchSingleFixture("1034627").flatMap { response =>
-  response.headOption match {
+  response.response.headOption match {
     case Some(fixture) =>
       IO.println(s"Match: ${fixture.teams.home.name} ${fixture.goals.home} - ${fixture.goals.away} ${fixture.teams.away.name}")
     case None =>
@@ -98,7 +98,7 @@ def getTeamFixtures(apiClient: FootballApiClient[IO], teamId: String, season: St
 
 ```scala
 apiClient.fetchSingleFixture("1034627").map { response =>
-  response.headOption.map { fixture =>
+  response.response.headOption.map { fixture =>
     // Basic fixture info
     val id = fixture.fixture.id
     val date = fixture.fixture.date
@@ -122,7 +122,7 @@ apiClient.fetchSingleFixture("1034627").map { response =>
 
 ```scala
 apiClient.fetchSingleFixture("1034627").map { response =>
-  response.headOption.map { fixture =>
+  response.response.headOption.map { fixture =>
     val league = fixture.league.name
     val season = fixture.league.season
     val round = fixture.league.round
@@ -292,7 +292,7 @@ def getLiveMatches(apiClient: FootballApiClient[IO]): IO[List[Fixture]] =
     response.response.filter { fixture =>
       fixture.fixture.status.short == "LIVE" ||
       fixture.fixture.status.short == "HT" ||
-      fixture.fixture.status.short == "PEN" ||
+      fixture.fixture.status.short == "PEN"
     }
   }
 ```
@@ -347,19 +347,17 @@ def getUpcomingFixtures(apiClient: FootballApiClient[IO], teamId: String, daysAh
 
 ```scala
 apiClient.fetchPredictions("1034627").map { response =>
-  response.headOption.map { prediction =>
-    val homeTeam = prediction.teams.home.name
-    val awayTeam = prediction.teams.away.name
+  response.response.headOption.map { prediction =>
+    val teams = prediction.teams.getOrElse(null)
+    val homeTeam = teams.home.name
+    val awayTeam = teams.away.name
 
-    val homeWin = prediction.predictions.winner.name == homeTeam
-    val awayWin = prediction.predictions.winner.name == awayTeam
-
-    val homePercent = prediction.predictions.percent.home
-    val drawPercent = prediction.predictions.percent.draw
-    val awayPercent = prediction.predictions.percent.away
+    val winner = prediction.predictions.winner.map(_.name).getOrElse("N/A")
+    val percent = prediction.predictions.percent.getOrElse(Map.empty)
 
     println(s"Match: $homeTeam vs $awayTeam")
-    println(s"Prediction: ${homeWin}% $homePercent, Draw: $drawPercent%, $awayWin% $awayPercent")
+    println(s"Prediction: Winner: $winner")
+    println(s"Percentages: Home: ${percent.getOrElse("home", "N/A")}, Draw: ${percent.getOrElse("draw", "N/A")}, Away: ${percent.getOrElse("away", "N/A")}")
   }
 }
 ```
