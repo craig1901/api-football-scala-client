@@ -1,0 +1,39 @@
+title: API Football Scala Client
+description: A functional, type-safe Scala client for the API-Football service
+theme: jekyll-theme-cayman
+github_username: craig1901
+
+# Base URL configuration for GitHub Pages
+baseurl: "/api-football-scala-client"
+url: "https://craig1901.github.io"
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Navigation
+navigation:
+  - title: Getting Started
+    url: getting-started.html
+  - title: API Client Basics
+    url: api-client-basics.html
+  - title: Fixtures
+    url: fixtures.html
+  - title: Teams & Players
+    url: teams-players.html
+  - title: Leagues
+    url: leagues.html
+  - title: Statistics
+    url: statistics.html
+  - title: Streaming
+    url: streaming.html
+  - title: Error Handling
+    url: error-handling.html
+  - title: API Reference
+    url: api-reference.html
+
+# Exclude from build
+exclude:
+  - README.md
