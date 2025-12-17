@@ -1,3 +1,9 @@
+---
+layout: page
+title: Leagues & Competitions
+permalink: /leagues/
+---
+
 # Leagues & Competitions
 
 This guide covers working with league and competition data using the API Football Scala Client.

@@ -1,3 +1,9 @@
+---
+layout: page
+title: Streaming & Pagination
+permalink: /streaming/
+---
+
 # Streaming & Pagination
 
 This guide covers how to handle large datasets efficiently using the streaming capabilities of the API Football Scala Client.

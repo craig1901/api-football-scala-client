@@ -1,3 +1,9 @@
+---
+layout: page
+title: Teams & Players
+permalink: /teams-players/
+---
+
 # Teams & Players
 
 This guide covers working with team and player data using the API Football Scala Client.

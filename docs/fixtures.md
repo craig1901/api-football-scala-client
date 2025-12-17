@@ -1,3 +1,9 @@
+---
+layout: page
+title: Fixtures & Matches
+permalink: /fixtures/
+---
+
 # Fixtures & Matches
 
 This guide covers working with fixtures (matches) using the API Football Scala Client.

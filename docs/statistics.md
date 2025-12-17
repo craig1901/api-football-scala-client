@@ -1,3 +1,9 @@
+---
+layout: page
+title: Statistics
+permalink: /statistics/
+---
+
 # Statistics
 
 This guide covers working with statistical data using the API Football Scala Client, including team statistics, player performance metrics, and advanced analytics.

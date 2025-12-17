@@ -1,3 +1,9 @@
+---
+layout: page
+title: API Client Basics
+permalink: /api-client-basics/
+---
+
 # API Client Basics
 
 This section covers the fundamental usage patterns of the API Football Scala Client.

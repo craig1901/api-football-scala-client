@@ -1,3 +1,9 @@
+---
+layout: page
+title: Error Handling
+permalink: /error-handling/
+---
+
 # Error Handling
 
 This guide covers error handling strategies and best practices when using the API Football Scala Client.

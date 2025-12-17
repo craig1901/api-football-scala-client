@@ -1,3 +1,9 @@
+---
+layout: page
+title: API Reference
+permalink: /api-reference/
+---
+
 # API Reference
 
 This is a comprehensive reference of all methods available in the FootballApiClient interface.

@@ -1,3 +1,9 @@
+---
+layout: page
+title: Getting Started
+permalink: /getting-started/
+---
+
 # Getting Started
 
 This guide will help you get up and running with the API Football Scala Client quickly.
