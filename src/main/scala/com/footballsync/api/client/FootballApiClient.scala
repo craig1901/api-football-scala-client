@@ -31,10 +31,11 @@ trait FootballApiClient[F[_]] {
   def fetchTopAssists(leagueId: String, season: String): F[ApiResponse[PlayerStatisticsResponse]]
   def fetchTopYellowCards(leagueId: String, season: String): F[ApiResponse[PlayerStatisticsResponse]]
   def fetchTopRedCards(leagueId: String, season: String): F[ApiResponse[PlayerStatisticsResponse]]
-  def fetchVenues(name: Option[String] = None,
-                  city: Option[String] = None,
-                  country: Option[String] = None,
-                  id: Option[String] = None
+  def fetchVenues(
+    name: Option[String] = None,
+    city: Option[String] = None,
+    country: Option[String] = None,
+    id: Option[String] = None
   ): F[ApiResponse[VenueResponse]]
   def fetchStandings(leagueId: String, season: String): F[ApiResponse[StandingResponse]]
   def fetchCoaches(teamId: Option[String] = None, coachId: Option[String] = None): F[ApiResponse[CoachResponse]]
