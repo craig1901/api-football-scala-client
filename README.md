@@ -3,7 +3,7 @@
 A functional, type-safe Scala client for the [API-Football](https://www.api-football.com/) service (v3). This library provides comprehensive access to football data including fixtures, teams, players, leagues, statistics, transfers, and more.
 
 [![Scala CI](https://github.com/craig1901/api-football-scala-client/workflows/CI/badge.svg)](https://github.com/craig1901/api-football-scala-client/actions)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.craig1901/api-football-scala-client_2.13.svg)](https://central.sonatype.com/artifact/io.github.craig1901/api-football-scala-client_2.13/0.0.1/overview)
+[![Maven Central](https://img.shields.io/badge/maven--central-0.1.0-blue.svg)](https://central.sonatype.com/artifact/io.github.craig1901/api-football-scala-client_2.13/0.1.0)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Features
